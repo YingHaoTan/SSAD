@@ -14,14 +14,28 @@ class Incident:
         self.advisory = advisory
 
 
-class Person:
+class Contact:
+    AUTHORITY_POLICE = 0
+
+    def __init__(self, name, phone):
+        self.name = name
+        self.phone = phone
+
+    @staticmethod
+    def retrieve_authority_contact(authority):
+        if authority == Contact.AUTHORITY_POLICE:
+            return Contact('Police', '+6591515341')
+        else:
+            raise ValueError("Authority is undefined")
+
+
+class Person(Contact):
     GENDER_MALE = 'M'
     GENDER_FEMALE = 'F'
 
-    def __init__(self, name, gender, phone, address):
-        self.name = name
+    def __init__(self, name, phone, gender, address):
+        super().__init__(name, phone)
         self.gender = gender
-        self.phone = phone
         self.address = address
 
 
@@ -54,10 +68,10 @@ class GeoCoordinate:
 
 def retrieve_nearby_residents(incident, max_distance):
     person_list = [
-        Person("Tan Ying Hao", Person.GENDER_MALE, '+6591515341',
+        Person("Tan Ying Hao", '+6591515341', Person.GENDER_MALE,
                Address('Blk 540 Jelepang Road', '20-36', '670540',
                        GeoCoordinate(1.384860, 103.766550))),
-        Person("Lim Xuan Yin", Person.GENDER_MALE, '+6590290589',
+        Person("Lim Xuan Yin", '+6590290589', Person.GENDER_MALE,
                Address('Blk 487 Tampines Street Avenue 4', '03-99', '520487',
                        GeoCoordinate(1.360320, 103.944397)))
     ]

@@ -2,6 +2,24 @@ import model
 import renderer
 import connector
 
+ALERT_AUTHORITY_SPEC = """
+Crisis Management System
+
+The following incident was recorded and assistance is required from your department.
+
+Incident Name: 
+{0.name}
+
+Incident Category: 
+{0.category}
+
+Description:
+{0.description}
+
+Advisory:
+{0.advisory}
+"""
+
 
 ALERT_PUBLIC_SPEC = """
 Public Alert Message
@@ -12,8 +30,11 @@ in the vicinity of your residential area,
 please follow the advisory stated below on any possible 
 follow-up actions.
         
-Incident Name: {0.name}
-Incident Category: {0.category}
+Incident Name: 
+{0.name}
+
+Incident Category: 
+{0.category}
         
 Description:
 {0.description}
@@ -26,13 +47,15 @@ Advisory:
 class SocialMedia:
 
     def __init__(self):
+        self.alert_authority_renderer = renderer.MessageFormatRenderer(ALERT_AUTHORITY_SPEC)
         self.alert_public_renderer = renderer.MessageFormatRenderer(ALERT_PUBLIC_SPEC)
 
         self.facebook_connector = connector.FacebookConnector()
         self.sms_connector = connector.SMSConnector()
 
     def alert_authorities(self, incident: model.Incident):
-        self.sms_connector.send_message(self.renderer.render_message(incident), '+6591515341')
+        self.sms_connector.send_message(self.alert_authority_renderer.render_message(incident),
+                                        model.Contact.retrieve_authority_contact(model.Contact.AUTHORITY_POLICE).phone)
 
     def alert_public(self, incident: model.Incident, max_distance_km=5):
         public_members = model.retrieve_nearby_residents(incident, max_distance_km)
@@ -63,6 +86,6 @@ if __name__ == "__main__":
                                   model.GeoCoordinate(1.360320, 103.944397),
                                   "This is a description of the crisis",
                                   "14-Jul-1993", "09:30", "Please do not panic")
-    # alert_authorities_test(incident_obj)
-    alert_public_test(incident_obj)
-    # post_facebook_test(incident_obj)
+    alert_authorities_test(incident_obj)
+    #alert_public_test(incident_obj)
+    #post_facebook_test(incident_obj)
