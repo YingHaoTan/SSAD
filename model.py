@@ -89,9 +89,9 @@ class Person(Contact):
 class Address:
 
     def __init__(self, street_name, unit_number, postal_code, coordinates):
-        self.street_name = street_name if not None else ''
-        self.unit_number = unit_number if not None else ''
-        self.postal_code = postal_code if not None else ''
+        self.street_name = street_name if street_name is not None else ''
+        self.unit_number = unit_number if unit_number is not None else ''
+        self.postal_code = postal_code if postal_code is not None else ''
         self.__coordinates__ = coordinates
 
     @property
