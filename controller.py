@@ -7,16 +7,33 @@ Crisis Management System
 
 The following incident was recorded and assistance is required from your department.
 
-Incident Name: 
+*Incident ID*
+{0.identifier}
+
+*Reported Time*
+{0.reported_time}
+
+*Caller Name* 
 {0.name}
 
-Incident Category: 
-{0.category}
+*Caller Phone*
+{0.phone}
 
-Description:
+*Address*
+{0.address.street_name} {0.address.unit_number}
+{0.address.postal_code}
+
+*Description*
 {0.description}
-"""
 
+*Assistance Required*
+{0.assistance_required}
+
+*Priority Values*
+Injury: {0.priority.injury}
+Danger: {0.priority.danger}
+Help:{0.priority.help}
+"""
 
 ALERT_PUBLIC_SPEC = """
 Public Alert Message
@@ -50,39 +67,43 @@ class SocialMedia:
         self.facebook_connector = connector.FacebookConnector()
         self.sms_connector = connector.SMSConnector()
 
-    def alert_authorities(self, incident: model.Incident, authority):
+    def alert_authorities(self, incident: model.IncidentReport, authority):
         self.sms_connector.send_message(self.alert_authority_renderer.render_message(incident),
                                         model.Contact.retrieve_authority_contact(authority).phone)
 
-    def alert_public(self, incident: model.Incident, max_distance_km=5):
+    def alert_public(self, incident: model.CrisisReport, max_distance_km=5):
         public_members = model.Person.retrieve_nearby_residents(incident.coordinate, max_distance_km)
         for member in public_members:
             self.sms_connector.send_message(self.alert_public_renderer.render_message(incident), member.phone)
 
-    def post_facebook(self, incident: model.Incident):
+    def post_facebook(self, incident: model.CrisisReport):
         self.facebook_connector.send_message(self.renderer.render_message(incident))
 
 
-def alert_authorities_test(incident):
+def alert_authorities_test():
     controller = SocialMedia()
-    controller.alert_authorities(incident, model.Contact.AUTHORITY_POLICE)
+    controller.alert_authorities(model.IncidentReport(0, "Incident 1",
+                                                      model.Address('101 Bukit Panjang Road', None, '679910',
+                                                                    model.GeoCoordinate(1.360320, 103.944397)),
+                                                      "+6591515341",
+                                                      "This is a description of the crisis",
+                                                      "5",
+                                                      "14-Jul-1993 09:30", "No assistance required",
+                                                      model.Priority(5, 3, 7)),
+                                 model.Contact.AUTHORITY_POLICE)
 
 
-def alert_public_test(incident):
+def alert_public_test():
     controller = SocialMedia()
-    controller.alert_public(incident)
+    controller.alert_public(model.CrisisReport())
 
 
-def post_facebook_test(incident):
+def post_facebook_test():
     controller = SocialMedia()
-    controller.post_facebook(incident)
+    controller.post_facebook(model.CrisisReport())
 
 
 if __name__ == "__main__":
-    incident_obj = model.Incident(0, "Incident 1", "Crisis",
-                                  model.GeoCoordinate(1.360320, 103.944397),
-                                  "This is a description of the crisis",
-                                  "14-Jul-1993", "09:30", "Please do not panic")
-    #alert_authorities_test(incident_obj)
-    alert_public_test(incident_obj)
-    #post_facebook_test(incident_obj)
+    alert_authorities_test()
+    # alert_public_test(incident_obj)
+    # post_facebook_test(incident_obj)

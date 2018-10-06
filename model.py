@@ -1,13 +1,42 @@
 from math import radians, cos, sin, asin, sqrt
 
 
-class Incident:
+class Priority:
 
-    def __init__(self, identifier, name, category, coordinate, description, date, time, advisory):
-        self.id = identifier
+    def __init__(self, injury_value, danger_value, help_value):
+        self.injury = injury_value
+        self.danger = danger_value
+        self.help = help_value
+
+
+class Report:
+
+    def __init__(self, identifier, name, address):
+        self.identifier = identifier
         self.name = name
+        self.address = address
+
+
+class IncidentReport(Report):
+
+    def __init__(self, identifier, name, address, phone, description, status, reported_time, assistance_required,
+                 priority):
+        super().__init__(identifier, name, address)
+        self.phone = phone
+        self.address = address
+        self.description = description
+        self.status = status
+        self.reported_time = reported_time
+        self.assistance_required = assistance_required
+        self.priority = priority
+
+
+class CrisisReport(Report):
+
+    def __init__(self, identifier, name, address, category, description, date, time, advisory):
+        super().__init__(identifier, name, address)
         self.category = category
-        self.coordinate = coordinate
+        self.address = address
         self.description = description
         self.date = date
         self.time = time
@@ -24,7 +53,7 @@ class Contact:
     @staticmethod
     def retrieve_authority_contact(authority):
         if authority == Contact.AUTHORITY_POLICE:
-            return Contact('Police', '+6590290589')
+            return Contact('Police', '+6591515341')
         else:
             raise ValueError("Authority is undefined")
 
@@ -60,10 +89,17 @@ class Person(Contact):
 class Address:
 
     def __init__(self, street_name, unit_number, postal_code, coordinates):
-        self.street_name = street_name
-        self.unit_number = unit_number
-        self.postal_code = postal_code
-        self.coordinates = coordinates
+        self.street_name = street_name if not None else ''
+        self.unit_number = unit_number if not None else ''
+        self.postal_code = postal_code if not None else ''
+        self.__coordinates__ = coordinates
+
+    @property
+    def coordinates(self):
+        if self.__coordinates__ is not None:
+            return self.__coordinates__
+        else:
+            return GeoCoordinate(1.384860, 103.766550)
 
 
 class GeoCoordinate:
