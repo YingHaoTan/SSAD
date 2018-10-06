@@ -15,9 +15,6 @@ Incident Category:
 
 Description:
 {0.description}
-
-Advisory:
-{0.advisory}
 """
 
 
@@ -53,9 +50,9 @@ class SocialMedia:
         self.facebook_connector = connector.FacebookConnector()
         self.sms_connector = connector.SMSConnector()
 
-    def alert_authorities(self, incident: model.Incident):
+    def alert_authorities(self, incident: model.Incident, authority):
         self.sms_connector.send_message(self.alert_authority_renderer.render_message(incident),
-                                        model.Contact.retrieve_authority_contact(model.Contact.AUTHORITY_POLICE).phone)
+                                        model.Contact.retrieve_authority_contact(authority).phone)
 
     def alert_public(self, incident: model.Incident, max_distance_km=5):
         public_members = model.retrieve_nearby_residents(incident, max_distance_km)
@@ -68,7 +65,7 @@ class SocialMedia:
 
 def alert_authorities_test(incident):
     controller = SocialMedia()
-    controller.alert_authorities(incident)
+    controller.alert_authorities(incident, model.Contact.AUTHORITY_POLICE)
 
 
 def alert_public_test(incident):

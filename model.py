@@ -38,6 +38,24 @@ class Person(Contact):
         self.gender = gender
         self.address = address
 
+    @staticmethod
+    def retrieve_nearby_residents(coordinate, max_distance):
+        person_list = [
+            Person("Tan Ying Hao", '+6591515341', Person.GENDER_MALE,
+                   Address('Blk 540 Jelepang Road', '20-36', '670540',
+                           GeoCoordinate(1.384860, 103.766550))),
+            Person("Lim Xuan Yin", '+6590290589', Person.GENDER_MALE,
+                   Address('Blk 487 Tampines Street Avenue 4', '03-99', '520487',
+                           GeoCoordinate(1.360320, 103.944397)))
+        ]
+
+        nearby = []
+        for person in person_list:
+            if person.address.coordinates.calculate_distance(coordinate) <= max_distance:
+                nearby.append(person)
+
+        return nearby
+
 
 class Address:
 
@@ -64,21 +82,3 @@ class GeoCoordinate:
         c = 2 * asin(sqrt(a))
 
         return c * 6371
-
-
-def retrieve_nearby_residents(incident, max_distance):
-    person_list = [
-        Person("Tan Ying Hao", '+6591515341', Person.GENDER_MALE,
-               Address('Blk 540 Jelepang Road', '20-36', '670540',
-                       GeoCoordinate(1.384860, 103.766550))),
-        Person("Lim Xuan Yin", '+6590290589', Person.GENDER_MALE,
-               Address('Blk 487 Tampines Street Avenue 4', '03-99', '520487',
-                       GeoCoordinate(1.360320, 103.944397)))
-    ]
-
-    nearby = []
-    for person in person_list:
-        if person.address.coordinates.calculate_distance(incident.coordinate) <= max_distance:
-            nearby.append(person)
-
-    return nearby
