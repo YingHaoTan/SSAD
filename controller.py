@@ -55,7 +55,7 @@ class SocialMedia:
                                         model.Contact.retrieve_authority_contact(authority).phone)
 
     def alert_public(self, incident: model.Incident, max_distance_km=5):
-        public_members = model.retrieve_nearby_residents(incident, max_distance_km)
+        public_members = model.Person.retrieve_nearby_residents(incident.coordinate, max_distance_km)
         for member in public_members:
             self.sms_connector.send_message(self.alert_public_renderer.render_message(incident), member.phone)
 
@@ -83,6 +83,6 @@ if __name__ == "__main__":
                                   model.GeoCoordinate(1.360320, 103.944397),
                                   "This is a description of the crisis",
                                   "14-Jul-1993", "09:30", "Please do not panic")
-    alert_authorities_test(incident_obj)
-    #alert_public_test(incident_obj)
+    #alert_authorities_test(incident_obj)
+    alert_public_test(incident_obj)
     #post_facebook_test(incident_obj)
