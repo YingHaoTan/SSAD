@@ -39,15 +39,15 @@ ALERT_PUBLIC_SPEC = """
 Public Alert Message
         
 This is a public alert message to inform you 
-that an incident has occurred on {0.date} {0.time} 
+that an crisis has occurred on {0.date} {0.time} 
 in the vicinity of your residential area, 
 please follow the advisory stated below on any possible 
 follow-up actions.
         
-Incident Name: 
+Crisis Name: 
 {0.name}
 
-Incident Category: 
+Crisis Category: 
 {0.category}
         
 Description:
@@ -70,6 +70,7 @@ class SocialMedia:
     def __init__(self):
         self.alert_authority_renderer = renderer.MessageFormatRenderer(ALERT_AUTHORITY_SPEC)
         self.alert_public_renderer = renderer.MessageFormatRenderer(ALERT_PUBLIC_SPEC)
+        self.facebook_renderer = renderer.MessageFormatRenderer(ALERT_PUBLIC_SPEC)
 
         self.facebook_connector = connector.FacebookConnector()
         self.sms_connector = connector.SMSConnector()
@@ -104,7 +105,7 @@ class SocialMedia:
         :return: None
         """
 
-        self.facebook_connector.send_message(self.renderer.render_message(crisis))
+        self.facebook_connector.send_message(self.facebook_renderer.render_message(crisis))
 
 
 def alert_authorities_test():
@@ -133,10 +134,13 @@ def post_facebook_test():
     """Test case 3"""
 
     controller = SocialMedia()
-    controller.post_facebook(model.CrisisReport())
+    controller.post_facebook(model.CrisisReport(0, "Fire at ABC",
+                                                model.Address('101 Bukit Panjang Road', None, '679910',
+                                                              model.GeoCoordinate(1.360320, 103.944397)),
+                                                "Fire", "Big fire at ABC", "14-07-1993", "10:30", "Do not panic"))
 
 
 if __name__ == "__main__":
-    alert_authorities_test()
-    # alert_public_test(incident_obj)
-    # post_facebook_test(incident_obj)
+    # alert_authorities_test()
+    # alert_public_test()
+    post_facebook_test()
